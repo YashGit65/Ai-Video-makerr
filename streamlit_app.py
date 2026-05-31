@@ -231,50 +231,57 @@ if result:
 
         st.divider()
 
-        # Upload Button
-        if not st.session_state.show_upload:
-            from streamlit_oauth import OAuth2Component
+        from streamlit_oauth import OAuth2Component
 
-            oauth2 = OAuth2Component(
-                client_id=st.secrets["GOOGLE_CLIENT_ID"],
-                client_secret=st.secrets["GOOGLE_CLIENT_SECRET"],
-                authorize_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
-                token_endpoint="https://oauth2.googleapis.com/token",
+        oauth2 = OAuth2Component(
+            client_id=st.secrets["GOOGLE_CLIENT_ID"],
+            client_secret=st.secrets["GOOGLE_CLIENT_SECRET"],
+            authorize_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
+            token_endpoint="https://oauth2.googleapis.com/token",
+        )
+
+        oauth_result = oauth2.authorize_button(
+            name="🔗 Connect YouTube",
+            redirect_uri="https://free-ai-video-maker.streamlit.app/component/streamlit_oauth.authorize_button",
+            scope="https://www.googleapis.com/auth/youtube.upload",
+        )
+
+        if oauth_result:
+            st.session_state.google_token = oauth_result["token"]
+
+        # User not connected yet
+        if "google_token" not in st.session_state:
+            st.info("Connect your YouTube account first.")
+            st.stop()
+
+        from google.oauth2.credentials import Credentials
+        from googleapiclient.discovery import build
+
+        creds = Credentials(
+            token=st.session_state.google_token["access_token"]
+        )
+
+        youtube = build(
+            "youtube",
+            "v3",
+            credentials=creds
+        )
+
+        st.success("✅ YouTube account connected")
+
+        if st.button(
+            "🚀 Upload To YouTube",
+            use_container_width=True
+        ):
+
+            upload_video(
+                youtube=youtube,
+                topic=result["video_name"],
+                script=result.get("script", ""),
+                video_file=video_file
             )
 
-            result = oauth2.authorize_button(
-                name="Connect YouTube",
-                redirect_uri="https://your-app.streamlit.app/component/streamlit_oauth.authorize_button",
-                scope="https://www.googleapis.com/auth/youtube.upload",
-                
-)
-            if result:
-                st.session_state["google_token"] = result["token"]
-                
-            from google.oauth2.credentials import Credentials
-            from googleapiclient.discovery import build
-
-            creds = Credentials(
-                token=st.session_state["google_token"]["access_token"]
-            )
-
-            youtube = build(
-                "youtube",
-                "v3",
-                credentials=creds
-            )    
-
-            if st.button("Upload To YouTube"):
-
-                upload_video(
-                    youtube=youtube,
-                    topic=result["video_name"],
-                    script=result["script"],
-                    video_file=video_file
-    )
-            
-                st.session_state.show_upload = True
-                st.rerun()
+            st.success("🎉 Video uploaded successfully!")
 
         # =================================================
         # YouTube Upload Section
