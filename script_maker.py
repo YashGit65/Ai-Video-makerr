@@ -46,6 +46,8 @@ Topic: {hindi_topic}
 
 तुम्हारा काम ऐसा narration लिखना है जिसे सुनकर viewer वीडियो skip ना करे।
 
+very very important : Script must contain more than 90 words and less than 150 words
+
 STRICT RULES:
 - सिर्फ voiceover narration लिखो
 - कोई timestamps नहीं
@@ -54,8 +56,7 @@ STRICT RULES:
 - कोई headings नहीं
 - कोई bullet points नहीं
 - सिर्फ बोलने वाला टेक्स्ट
-- conversational Hindi
-- 30 से 40 सेकंड
+- conversational Hindi  
 - शुरुआत में strong hook
 - suspense + curiosity बनाए रखो
 - short spoken sentences
@@ -106,7 +107,7 @@ Title: ब्लैक होल का सच
         messages=[
             {"role": "user", "content": prompt}
         ],
-        max_tokens=400,
+        max_tokens=300,
         temperature=0.1
     )
 

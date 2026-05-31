@@ -8,38 +8,20 @@ from googleapiclient.discovery import build
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 TOKEN_FILE = 'token.json'
 
-def authenticate_youtube():
-    creds = None
+def authenticate_youtube(file):
 
-    # Load saved token
-    if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(
-            TOKEN_FILE, SCOPES
-        )
+    flow = InstalledAppFlow.from_client_secrets_file(
+        file,
+        SCOPES
+    )
 
-    # Login only if needed
-    if not creds or not creds.valid:
+    creds = flow.run_local_server(port=0)
 
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "client_secret_252891285056-agr50dpkn4glfepbgsjdrf5q4rnou0pc.apps.googleusercontent.com.json",
-                SCOPES
-            )
-            creds = flow.run_local_server(port=0)
-
-        # Save token
-        with open(TOKEN_FILE, "w") as token:
-            token.write(creds.to_json())
-
-    youtube = build(
+    return build(
         "youtube",
         "v3",
         credentials=creds
     )
-
-    return youtube
 
 def upload_video(youtube,topic,script,video_file):
     request_body = {

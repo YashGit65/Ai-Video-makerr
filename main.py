@@ -10,6 +10,7 @@ from scene_maker import generate_storyboard
 from script_maker import generate_hindi_short_script, convert_topic_to_hindi
 from voice_recorder import generate_voice, get_audio_duration
 from youtube_uploader import authenticate_youtube, upload_video
+from cleanup import cleanup_files
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -75,13 +76,7 @@ def generate_short_video(topic, output_dir_name=None, status_callback=None):
     video_file = BASE_DIR / f"{video_name}.mp4"
     report(f"Done: {video_file}")
     
-    print("Uploading to YouTube...")
-    youtube = authenticate_youtube()
-    print("Authenticated with YouTube.")
-    hashh =["#shorts","#youtubeshorts","#Viral","#Trending","#ytshorts","#Shorts","#YouTubeShorts","#ShortsVideo"]
-    script = f"{' '.join(hashh)}\n\n{script}"
-    upload_video(youtube, topic, script, video_file)
-    print("Upload complete.")
+    
 
     return {
         "topic": topic,
@@ -96,8 +91,7 @@ def generate_short_video(topic, output_dir_name=None, status_callback=None):
         "image_count": image_count,
         "duration_per_image": duration_per_image,
         "frames_per_image": frames_per_image,
-        "video_file": video_file,
-        "youtube": youtube
+        "video_file": video_file
     }
 
 
