@@ -242,13 +242,13 @@ if result:
                 token_endpoint="https://oauth2.googleapis.com/token",
             )
 
-            oath_result = oauth2.authorize_button(
+            oauth_result = oauth2.authorize_button(
                 name="Connect YouTube",
                 redirect_uri="https://free-ai-video-maker.streamlit.app/component/streamlit_oauth.authorize_button",
                 scope="https://www.googleapis.com/auth/youtube.upload",
                 
 )
-            if oath_result:
+            if oauth_result:
                 st.session_state.google_token = oauth_result["token"]
 
             if "google_token" not in st.session_state:
