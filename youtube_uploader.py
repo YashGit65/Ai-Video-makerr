@@ -1,8 +1,4 @@
 import os
-import google_auth_httplib2
-import google_auth_oauthlib
-import googleapiclient.discovery
-import googleapiclient.errors
 import googleapiclient.http
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
