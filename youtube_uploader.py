@@ -4,26 +4,44 @@ import google_auth_oauthlib
 import googleapiclient.discovery
 import googleapiclient.errors
 import googleapiclient.http
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 TOKEN_FILE = 'token.json'
 
 def authenticate_youtube():
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    creds = None
 
+    # Load saved token
     if os.path.exists(TOKEN_FILE):
-        os.remove(TOKEN_FILE)
+        creds = Credentials.from_authorized_user_file(
+            TOKEN_FILE, SCOPES
+        )
 
-    # Load client secrets file, put the path of your file
-    client_secrets_file = "Yourclientsecretfile.json"
+    # Login only if needed
+    if not creds or not creds.valid:
 
-    
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, SCOPES)
-    credentials = flow.run_local_server()
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "client_secret_252891285056-agr50dpkn4glfepbgsjdrf5q4rnou0pc.apps.googleusercontent.com.json",
+                SCOPES
+            )
+            creds = flow.run_local_server(port=0)
 
-    youtube = googleapiclient.discovery.build(
-        "youtube", "v3", credentials=credentials)
+        # Save token
+        with open(TOKEN_FILE, "w") as token:
+            token.write(creds.to_json())
+
+    youtube = build(
+        "youtube",
+        "v3",
+        credentials=creds
+    )
 
     return youtube
 
@@ -33,7 +51,7 @@ def upload_video(youtube,topic,script,video_file):
             "categoryId": "22",
             "title": topic,
             "description": script,
-            "tags": ["test","python", "api" ]
+            "tags": ["#shorts","#youtubeshorts","#Viral","#Trending","#ytshorts","#Shorts","#YouTubeShorts","#ShortsVideo"]
         },
         "status":{
             "privacyStatus": "public"

@@ -1,14 +1,4 @@
-from huggingface_hub import InferenceClient
-from dotenv import load_dotenv
-import os
-load_dotenv()
-
-api2 = os.getenv("api2")
-
-client = InferenceClient(
-    provider="nscale",
-    api_key=api2
-)
+from llm import client
 
 # ==========================================
 # ENGLISH → HINDI TOPIC
@@ -33,7 +23,7 @@ Topic:
         messages=[
             {"role": "user", "content": prompt}
         ],
-        max_tokens=50,
+        max_tokens=100,
         temperature=0
     )
 
@@ -116,8 +106,8 @@ Title: ब्लैक होल का सच
         messages=[
             {"role": "user", "content": prompt}
         ],
-        max_tokens=250,
-        temperature=0.9
+        max_tokens=400,
+        temperature=0.1
     )
 
     return response.choices[0].message.content

@@ -1,18 +1,7 @@
 import os
 import time
 from pathlib import Path
-from huggingface_hub import InferenceClient
-from dotenv import load_dotenv
-load_dotenv()
-
-api2 = os.getenv("api2")
-
-
-
-client = InferenceClient(
-    provider="nscale",
-    api_key=api2,
-)
+from llm import client
 
 def generate_photos(storyboard, output_dir):
     OUTPUT_DIR = Path(output_dir)

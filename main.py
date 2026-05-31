@@ -4,13 +4,13 @@ import json
 import os
 import re
 from pathlib import Path
-
 from merger import create_video
 from photo_generator import generate_photos
 from scene_maker import generate_storyboard
 from script_maker import generate_hindi_short_script, convert_topic_to_hindi
 from voice_recorder import generate_voice, get_audio_duration
 from youtube_uploader import authenticate_youtube, upload_video
+
 
 BASE_DIR = Path(__file__).resolve().parent
 FPS = 25
@@ -78,6 +78,8 @@ def generate_short_video(topic, output_dir_name=None, status_callback=None):
     print("Uploading to YouTube...")
     youtube = authenticate_youtube()
     print("Authenticated with YouTube.")
+    hashh =["#shorts","#youtubeshorts","#Viral","#Trending","#ytshorts","#Shorts","#YouTubeShorts","#ShortsVideo"]
+    script = f"{' '.join(hashh)}\n\n{script}"
     upload_video(youtube, topic, script, video_file)
     print("Upload complete.")
 
