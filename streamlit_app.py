@@ -248,8 +248,8 @@ if result:
                 scope="https://www.googleapis.com/auth/youtube.upload",
                 
 )
-            if result:
-                st.session_state["google_token"] = result["token"]
+            if resultt:
+                st.session_state["google_token"] = resultt["token"]
                 
             from google.oauth2.credentials import Credentials
             from googleapiclient.discovery import build
