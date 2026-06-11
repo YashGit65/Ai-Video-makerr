@@ -8,6 +8,8 @@ from googleapiclient.discovery import build
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 TOKEN_FILE = 'token.json'
 
+# AGAR KABHI SAHI KARNO HO CODE TOH CLIENT.JSON WALI FILE ADD KRKE KRNA OR YT VIDEO DHEK LENA IS CODE KE LIYE
+
 def authenticate_youtube(file):
 
     flow = InstalledAppFlow.from_client_secrets_file(
@@ -23,7 +25,7 @@ def authenticate_youtube(file):
         credentials=creds
     )
 
-def upload_video(youtube,topic,script,video_file):
+def upload_video(youtube, topic, script, video_file, privacy_status="public"):
     request_body = {
         "snippet": {
             "categoryId": "22",
@@ -32,7 +34,7 @@ def upload_video(youtube,topic,script,video_file):
             "tags": ["#shorts","#youtubeshorts","#Viral","#Trending","#ytshorts","#Shorts","#YouTubeShorts","#ShortsVideo"]
         },
         "status":{
-            "privacyStatus": "public"
+            "privacyStatus": privacy_status
         }
     }
 
@@ -52,7 +54,9 @@ def upload_video(youtube,topic,script,video_file):
         if status:
             print(f"Upload {int(status.progress()*100)}%")
 
-        print(f"Video uploaded with ID: {response['id']}")
+    video_id = response["id"]
+    print(f"Video uploaded with ID: {video_id}")
+    return video_id
 
 if __name__ == "__main__":
     youtube = authenticate_youtube()

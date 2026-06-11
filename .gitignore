@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local OAuth credentials and generated app temp files
+temp/
+client*.json
+client_secret*.json
+token*.json

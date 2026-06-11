@@ -76,6 +76,14 @@ def generate_short_video(topic, output_dir_name=None, status_callback=None):
     video_file = BASE_DIR / f"{video_name}.mp4"
     report(f"Done: {video_file}")
     
+    # AGAR YAHA PE YT WALA VIDEO FEATURE ADD KARNA HO TOH NICHAY WALA CODE ADD KARKE DEKH LENA
+    # report("Uploading to YouTube...")
+    # youtube = authenticate_youtube("client.json")
+    # upload_video(youtube, topic, script,video_file)
+    
+    # ALSO ADD A CLEANUP
+    # cleanup_files(audio_file, video_file, output_dir)
+    
     
 
     return {
@@ -92,6 +100,7 @@ def generate_short_video(topic, output_dir_name=None, status_callback=None):
         "duration_per_image": duration_per_image,
         "frames_per_image": frames_per_image,
         "video_file": video_file
+        # "youtube_video_id": youtube_video_id,  # Add this line if you implement YouTube upload
     }
 
 

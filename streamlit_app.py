@@ -1,4 +1,5 @@
 import importlib
+import json
 import os
 import sys
 from pathlib import Path
@@ -60,6 +61,34 @@ def save_client_json(uploaded_file):
         f.write(uploaded_file.getbuffer())
 
     return file_path
+
+
+def validate_client_json(uploaded_file):
+    try:
+        client_data = json.loads(
+            uploaded_file.getvalue().decode("utf-8")
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return "Please upload a valid Google OAuth JSON file."
+
+    client_config = client_data.get("installed") or client_data.get("web")
+
+    if not isinstance(client_config, dict):
+        return "The JSON file must contain an installed or web OAuth client."
+
+    required_keys = ("client_id", "client_secret", "auth_uri", "token_uri")
+    missing_keys = [
+        key for key in required_keys
+        if not client_config.get(key)
+    ]
+
+    if missing_keys:
+        return (
+            "The OAuth JSON file is missing: "
+            + ", ".join(missing_keys)
+        )
+
+    return None
 
 
 # =====================================================
@@ -230,6 +259,132 @@ if result:
             )
 
         st.divider()
+
+        st.subheader("YouTube Upload")
+
+        upload_requested = st.checkbox(
+            "Upload this video to my YouTube channel",
+            key="show_upload"
+        )
+
+        if upload_requested:
+
+            st.info(
+                "Upload your Google OAuth client JSON, then sign in to the "
+                "YouTube account where this video should be posted."
+            )
+
+            st.link_button(
+                "Watch Setup Tutorial",
+                "https://youtu.be/aBwyDZS8HUc?si=l7k55dXC4dXVh-JX"
+            )
+
+            with st.expander(
+                "How to get a Google OAuth client JSON"
+            ):
+
+                st.markdown("""
+1. Open Google Cloud Console: https://console.cloud.google.com
+2. Create or choose a project.
+3. Enable **YouTube Data API v3**.
+4. Configure the OAuth consent screen.
+5. Create OAuth Client ID credentials.
+6. Choose **Desktop Application** if you run this app on your computer.
+7. Download the JSON file and upload it below.
+
+The app only requests YouTube upload permission.
+                """)
+
+            client_json = st.file_uploader(
+                "Upload clients.json or client_secret.json",
+                type=["json"]
+            )
+
+            youtube_title = st.text_input(
+                "YouTube title",
+                value=result["video_name"]
+            )
+
+            youtube_description = st.text_area(
+                "YouTube description",
+                value=result.get("script", ""),
+                height=180
+            )
+
+            privacy_status = st.selectbox(
+                "Privacy",
+                options=["private", "unlisted", "public"],
+                index=0
+            )
+
+            if client_json:
+                client_error = validate_client_json(client_json)
+
+                if client_error:
+                    st.error(client_error)
+                else:
+                    st.success("OAuth client JSON uploaded successfully.")
+
+            if st.button(
+                "Upload Video",
+                type="primary",
+                use_container_width=True
+            ):
+
+                try:
+
+                    if not client_json:
+                        st.error("Please upload your OAuth client JSON file.")
+                        st.stop()
+
+                    client_error = validate_client_json(client_json)
+
+                    if client_error:
+                        st.error(client_error)
+                        st.stop()
+
+                    if not youtube_title.strip():
+                        st.error("Please enter a YouTube title.")
+                        st.stop()
+
+                    client_path = save_client_json(
+                        client_json
+                    )
+
+                    with st.spinner(
+                        "Opening Google Login..."
+                    ):
+
+                        youtube = authenticate_youtube(
+                            str(client_path)
+                        )
+
+                    with st.spinner(
+                        "Uploading video..."
+                    ):
+
+                        video_id = upload_video(
+                            youtube=youtube,
+                            topic=youtube_title.strip(),
+                            script=youtube_description.strip(),
+                            video_file=video_file,
+                            privacy_status=privacy_status
+                        )
+
+                    st.success(
+                        "Video uploaded successfully!"
+                    )
+
+                    if video_id:
+                        st.link_button(
+                            "Open on YouTube",
+                            f"https://www.youtube.com/watch?v={video_id}"
+                        )
+
+                except Exception as e:
+                    st.exception(e)
+
+        st.stop()
 
         from streamlit_oauth import OAuth2Component
 
